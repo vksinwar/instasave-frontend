@@ -65,7 +65,6 @@ img {
 .nav {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     gap: 20px;
     padding: 10px 0;
 }
@@ -645,7 +644,7 @@ img {
 
 /* How To Section Styles */
 .how-to {
-    padding: 80px 0;
+    padding: 20px 0;
 }
 
 .how-to__title {
@@ -653,14 +652,14 @@ img {
     font-size: 2rem;
     font-weight: 700;
     color: var(--brand-color);
-    margin-bottom: 60px;
+    margin-bottom: 20px;
     text-transform: none;
 }
 
 .how-to__steps {
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 20px;
     max-width: 1000px;
     margin: 0 auto;
 }
@@ -669,22 +668,6 @@ img {
     display: flex;
     gap: 30px;
     position: relative;
-}
-
-.step-number {
-    width: 40px;
-    height: 40px;
-    background: #ff3366;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 2;
 }
 
 .step-content {
@@ -724,35 +707,19 @@ img {
     color: #666;
 }
 
-/* Add vertical line connecting steps */
-.how-to__step::before {
-    content: '';
-    position: absolute;
-    left: 19px;
-    top: 40px;
-    bottom: -60px;
-    width: 2px;
-    background: #e0e0e0;
-    z-index: 1;
-}
-
-.how-to__step:last-child::before {
-    display: none;
-}
-
 /* Responsive styles for How To section */
 @media (max-width: 768px) {
     .how-to {
-        padding: 40px 0;
+        padding: 15px 0;
     }
 
     .how-to__title {
-        font-size: 1.75rem;
-        margin-bottom: 40px;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
     }
 
     .how-to__steps {
-        gap: 40px;
+        gap: 15px;
     }
 
     .step-content {
@@ -766,10 +733,6 @@ img {
 
     .step-info {
         text-align: center;
-    }
-
-    .how-to__step::before {
-        bottom: -40px;
     }
 }
 
@@ -843,7 +806,7 @@ img {
 
 /* Contact Section Styles */
 .contact-section {
-    padding: 60px 0;
+    padding: 20px 0;
     background: linear-gradient(to bottom, white, var(--background-color));
 }
 
@@ -919,7 +882,7 @@ img {
 
 /* Privacy Policy Styles */
 .privacy-section {
-    padding: 60px 0;
+    padding: 20px 0;
     background: var(--background-color);
 }
 
@@ -991,7 +954,7 @@ img {
 
 /* Terms Section Styles */
 .terms-section {
-    padding: 60px 0;
+    padding: 20px 0;
     background: var(--background-color);
 }
 
@@ -1068,9 +1031,9 @@ img {
     }
 }
 
-/* FAQ Section Styles - Updated to match How To section */
+/* FAQ Section Styles */
 .faq-section {
-    padding: 80px 0;
+    padding: 20px 0;
     background: var(--background-color);
 }
 
@@ -1086,7 +1049,7 @@ img {
     text-align: center;
     color: #666;
     max-width: 800px;
-    margin: 0 auto 60px;
+    margin: 0 auto 30px;
     line-height: 1.6;
     font-size: 1.1rem;
 }
@@ -1242,7 +1205,7 @@ img {
 /* Responsive styles for FAQ */
 @media (max-width: 768px) {
     .faq-section {
-        padding: 40px 0;
+        padding: 15px 0;
     }
 
     .faq-title {
@@ -1251,7 +1214,7 @@ img {
 
     .faq-subtitle {
         font-size: 1rem;
-        margin-bottom: 40px;
+        margin-bottom: 15px;
         padding: 0 20px;
     }
 
@@ -1374,10 +1337,6 @@ img {
 
 /* Base responsive styles */
 @media (max-width: 1024px) {
-    .container {
-        padding: 0 16px;
-    }
-    
     .form-block__wrapper {
         margin: 0 16px;
     }
@@ -1496,9 +1455,9 @@ html {
 
 /* Downloader Section Styles */
 .downloader-section {
-    padding: 80px 0;
+    padding: 20px 0;
     background: var(--background-color);
-    scroll-margin-top: 80px; /* This ensures proper scrolling with fixed header */
+    scroll-margin-top: 60px;
 }
 
 .downloader-section h2 {
@@ -1511,13 +1470,13 @@ html {
 
 @media (max-width: 768px) {
     .downloader-section {
-        padding: 40px 0;
+        padding: 15px 0;
         scroll-margin-top: 60px;
     }
 
     .downloader-section h2 {
         font-size: 1.5rem;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
     }
 }
 
@@ -1532,7 +1491,7 @@ section {
 .privacy-section,
 .terms-section,
 .contact-section {
-    padding: 40px 0;
+    padding: 20px 0;
 }
 
 /* Responsive adjustments */

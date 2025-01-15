@@ -3,19 +3,16 @@ import React from 'react';
 function HowTo() {
   const steps = [
     {
-      number: 1,
       title: "Copy the URL",
       description: "To get started, access either Instagram/Facebook app or website and retrieve the link to the specific video, reels, carousel, or content that you want to copy.",
       iconSrc: "/static/icons/copy.svg"
     },
     {
-      number: 2,
       title: "Paste the link",
       description: "Return to the website, paste the link into the input field at the top of the screen and click the \"Download\" button.",
       iconSrc: "/static/icons/paste.svg"
     },
     {
-      number: 3,
       title: "Download",
       description: "In no time at all, you'll receive a list of results that offer various quality options. Choose the option that best suits your requirements and download it.",
       iconSrc: "/static/icons/download.svg"
@@ -28,9 +25,8 @@ function HowTo() {
         <h2 className="how-to__title">How to download video from Instagram?</h2>
       </section>
       <div className="how-to__steps">
-        {steps.map((step) => (
-          <div key={step.number} className="how-to__step">
-            <div className="step-number">{step.number}</div>
+        {steps.map((step, index) => (
+          <div key={index} className="how-to__step">
             <div className="step-content">
               <div className="step-icon">
                 <div style={{ 
