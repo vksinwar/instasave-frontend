@@ -1,135 +1,80 @@
-import { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useCallback } from 'react';
+import Header from './components/Header';
+import MainContent from './components/MainContent';
+import Footer from './components/Footer';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+/**
+ * Error Boundary component to catch and handle React errors gracefully
+ * @extends {React.Component<{ children: React.ReactNode }, { hasError: boolean }>}
+ */
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-function App() {
-  const [url, setUrl] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [videoInfo, setVideoInfo] = useState(null);
+  /**
+   * Update state when an error occurs
+   * @param {Error} error The error that was caught
+   * @returns {{ hasError: boolean }} New state
+   */
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  /**
+   * Log error details when caught
+   * @param {Error} error The error that was caught
+   * @param {React.ErrorInfo} errorInfo Additional error information
+   */
+  componentDidCatch(error, errorInfo) {
+    console.error('Error:', error);
+    console.error('Error Info:', errorInfo);
+  }
 
-    try {
-      // First get video info
-      const infoResponse = await axios.post(`${API_URL}/video-info`, { url });
-      setVideoInfo(infoResponse.data);
-
-      // Then trigger download
-      const downloadResponse = await axios.post(`${API_URL}/download`, { url }, {
-        responseType: 'blob'
-      });
-
-      // Create download link
-      const downloadUrl = window.URL.createObjectURL(new Blob([downloadResponse.data]));
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.setAttribute('download', `${infoResponse.data.title || 'video'}.${infoResponse.data.ext || 'mp4'}`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
-    } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to download video');
-    } finally {
-      setLoading(false);
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-container">
+          <h1>Something went wrong.</h1>
+          <button onClick={() => window.location.reload()}>
+            Reload Page
+          </button>
+        </div>
+      );
     }
-  };
+
+    return this.props.children;
+  }
+}
+
+/**
+ * Main App component
+ * @returns {JSX.Element}
+ */
+function App() {
+  const [activeSection, setActiveSection] = useState('form-block');
+
+  const handlePageChange = useCallback((section) => {
+    try {
+      setActiveSection(section);
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        console.warn(`Section with id "${section}" not found`);
+      }
+    } catch (error) {
+      console.error('Error changing section:', error);
+    }
+  }, []);
 
   return (
-    <div className="container">
-      <header>
-        <h1>Video Downloader</h1>
-      </header>
-
-      <main>
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="Enter video URL"
-              required
-            />
-            <button type="submit" disabled={loading}>
-              {loading ? 'Downloading...' : 'Download'}
-            </button>
-          </div>
-        </form>
-
-        {error && (
-          <div className="error">
-            {error}
-          </div>
-        )}
-
-        {videoInfo && (
-          <div className="video-info">
-            <h3>{videoInfo.title}</h3>
-            <p>Duration: {videoInfo.duration}</p>
-            <p>Quality: {videoInfo.format}</p>
-          </div>
-        )}
-      </main>
-
-      <style jsx>{`
-        .container {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 2rem;
-        }
-
-        header {
-          text-align: center;
-          margin-bottom: 2rem;
-        }
-
-        .input-group {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        input {
-          flex: 1;
-          padding: 0.5rem;
-          font-size: 1rem;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-        }
-
-        button {
-          padding: 0.5rem 1rem;
-          font-size: 1rem;
-          background: #0070f3;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-
-        button:disabled {
-          background: #ccc;
-        }
-
-        .error {
-          color: red;
-          margin: 1rem 0;
-        }
-
-        .video-info {
-          margin-top: 2rem;
-          padding: 1rem;
-          background: #f5f5f5;
-          border-radius: 4px;
-        }
-      `}</style>
-    </div>
+    <ErrorBoundary>
+      <Header />
+      <MainContent activeSection={activeSection} />
+      <Footer onPageChange={handlePageChange} />
+    </ErrorBoundary>
   );
 }
 
