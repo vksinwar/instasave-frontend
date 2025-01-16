@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import DownloadForm from './DownloadForm';
 import HowTo from './HowTo';
 import FAQ from './FAQ';
@@ -17,9 +17,19 @@ const LoadingFallback = () => (
 
 /**
  * @typedef {'form-block' | 'contact-section' | 'privacy-section' | 'terms-section'} SectionType
- * @param {{ activeSection: SectionType }} props
+ * @param {{ activeSection: SectionType, type: string }} props
  */
-const MainContent = React.memo(({ activeSection }) => {
+const MainContent = React.memo(({ activeSection, type }) => {
+  useEffect(() => {
+    if (type) {
+      // Set the download type in the form
+      const selectElement = document.querySelector('.download-type-select');
+      if (selectElement) {
+        selectElement.value = type;
+      }
+    }
+  }, [type]);
+
   return (
     <main id="main-content" role="main">
       <h1 className="visually-hidden">InstaSave - Instagram Video Downloader</h1>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { languages } from '../data/languages';
 
 function Header() {
@@ -16,9 +17,9 @@ function Header() {
       <div className="container">
         <nav className="nav">
           <div className="logo">
-            <a href="/" aria-label="Home">
+            <Link to="/" aria-label="Home">
               <img src="/static/logo.svg" alt="InstaSave Logo" width="180" height="40" loading="lazy" />
-            </a>
+            </Link>
           </div>
           <div className="language-selector">
             <button 

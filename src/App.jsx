@@ -1,80 +1,59 @@
-import React, { useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
-import MainContent from './components/MainContent';
 import Footer from './components/Footer';
+import MainContent from './components/MainContent';
 
-/**
- * Error Boundary component to catch and handle React errors gracefully
- * @extends {React.Component<{ children: React.ReactNode }, { hasError: boolean }>}
- */
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  /**
-   * Update state when an error occurs
-   * @param {Error} error The error that was caught
-   * @returns {{ hasError: boolean }} New state
-   */
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  /**
-   * Log error details when caught
-   * @param {Error} error The error that was caught
-   * @param {React.ErrorInfo} errorInfo Additional error information
-   */
-  componentDidCatch(error, errorInfo) {
-    console.error('Error:', error);
-    console.error('Error Info:', errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="error-container">
-          <h1>Something went wrong.</h1>
-          <button onClick={() => window.location.reload()}>
-            Reload Page
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-/**
- * Main App component
- * @returns {JSX.Element}
- */
 function App() {
-  const [activeSection, setActiveSection] = useState('form-block');
+  const location = useLocation();
+  const [activeSection, setActiveSection] = useState(null);
 
-  const handlePageChange = useCallback((section) => {
-    try {
-      setActiveSection(section);
-      const element = document.getElementById(section);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        console.warn(`Section with id "${section}" not found`);
+  useEffect(() => {
+    const scrollToFormSection = () => {
+      const formElement = document.getElementById('form-block');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth' });
       }
-    } catch (error) {
-      console.error('Error changing section:', error);
+    };
+
+    // Handle scrolling based on path
+    if (location.pathname.includes('-downloader')) {
+      scrollToFormSection();
     }
-  }, []);
+
+    // Set active section based on path
+    if (location.pathname === '/privacy-policy') {
+      setActiveSection('privacy-section');
+    } else if (location.pathname === '/terms-and-conditions') {
+      setActiveSection('terms-section');
+    } else if (location.pathname === '/contact-us') {
+      setActiveSection('contact-section');
+    }
+  }, [location.pathname]);
+
+  const handlePageChange = (section) => {
+    const element = document.querySelector(`.${section}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <ErrorBoundary>
+    <>
       <Header />
-      <MainContent activeSection={activeSection} />
+      <Routes>
+        <Route path="/" element={<MainContent activeSection={activeSection} />} />
+        <Route path="/video-downloader" element={<MainContent type="video" activeSection={activeSection} />} />
+        <Route path="/short-downloader" element={<MainContent type="short" activeSection={activeSection} />} />
+        <Route path="/reels-downloader" element={<MainContent type="reel" activeSection={activeSection} />} />
+        <Route path="/story-downloader" element={<MainContent type="story" activeSection={activeSection} />} />
+        <Route path="/privacy-policy" element={<MainContent activeSection="privacy-section" />} />
+        <Route path="/terms-and-conditions" element={<MainContent activeSection="terms-section" />} />
+        <Route path="/contact-us" element={<MainContent activeSection="contact-section" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
       <Footer onPageChange={handlePageChange} />
-    </ErrorBoundary>
+    </>
   );
 }
 
