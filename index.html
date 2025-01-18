@@ -64,7 +64,18 @@
             ]
         }
         </script>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://isave-backend-sjwi.onrender.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://adservice.google.com; frame-src https://googleads.g.doubleclick.net;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://isave-backend-sjwi.onrender.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://www.google-analytics.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://adservice.google.com https://www.googletagmanager.com; frame-src https://googleads.g.doubleclick.net;">
+        
+        <!-- Google Analytics Tag -->
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z2RYM7EX5K"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            
+            gtag('config', 'G-Z2RYM7EX5K');
+        </script>
     </head>
 <body>
     <div id="root"></div>
