@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = 'https://isave-backend-sjwi.onrender.com/api';
 
 function DownloadForm() {
   const [url, setUrl] = useState('');
@@ -21,37 +20,75 @@ function DownloadForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!url) {
+      setError('Please enter a valid URL');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setProgress(0);
+    setVideoInfo(null);
 
     try {
-      // First get video info
-      const infoResponse = await axios.post(`${API_URL}/video-info`, { url });
-      setVideoInfo(infoResponse.data);
-      setProgress(50);
-
-      // Then trigger download
-      const downloadResponse = await axios.post(`${API_URL}/download`, { url }, {
-        responseType: 'blob',
-        onDownloadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 50) / progressEvent.total);
-          setProgress(50 + percentCompleted);
+      // Using fetch as specified by the backend
+      const response = await fetch(`${API_URL}/video?url=${encodeURIComponent(url)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
 
-      // Create download link
-      const downloadUrl = window.URL.createObjectURL(new Blob([downloadResponse.data]));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data); // For debugging
+
+      if (!data) {
+        throw new Error('No data received from server');
+      }
+
+      // Download the video directly
+      const downloadUrl = data.download_url;
+      if (!downloadUrl) {
+        throw new Error('No download URL available');
+      }
+
+      // Create an anchor element and trigger download
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.setAttribute('download', `${infoResponse.data.title || 'video'}.${infoResponse.data.ext || 'mp4'}`);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.download = 'video.mp4';
       document.body.appendChild(link);
       link.click();
-      link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(link);
+
+      // Set video info if available
+      setVideoInfo({
+        title: data.title || 'Video',
+        thumbnail: data.thumbnail,
+        duration: data.duration,
+        format: data.format || 'mp4'
+      });
+
       setProgress(100);
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to download video');
+      console.error('Download error:', err);
+      let errorMessage = 'Failed to download video. Please try again.';
+      
+      if (err.response) {
+        errorMessage = err.response.data?.message || err.response.statusText;
+      } else if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        errorMessage = 'Network error. Please check your connection.';
+      } else {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -91,7 +128,6 @@ function DownloadForm() {
             required
           />
           <div className="search-form__actions">
-
             <button 
               type="submit" 
               className="search-form__action-btn info-fetch-btn"
