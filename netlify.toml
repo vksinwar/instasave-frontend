@@ -1,4 +1,4 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://isave-backend-sjwi.onrender.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';" 
+    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://isave-backend-sjwi.onrender.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://adservice.google.com; frame-src https://googleads.g.doubleclick.net;" 
