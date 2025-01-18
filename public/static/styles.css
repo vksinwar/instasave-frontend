@@ -1518,6 +1518,7 @@ section {
     .search-form__actions {
         flex-direction: row;
         gap: 15px;
+        margin-bottom: 40px;
     }
 }
 
