@@ -34,6 +34,8 @@ function DownloadForm() {
       // Using fetch as specified by the backend
       const response = await fetch(`${API_URL}/video?url=${encodeURIComponent(url)}`, {
         method: 'GET',
+        mode: 'cors',
+        credentials: 'omit',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
