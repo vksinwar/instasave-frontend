@@ -131,6 +131,15 @@ function DownloadForm() {
           />
           <div className="search-form__actions">
             <button 
+              type="button"
+              onClick={handlePaste}
+              className="search-form__action-btn paste-btn"
+              aria-label="Paste URL"
+              disabled={loading}
+            >
+              Paste
+            </button>
+            <button 
               type="submit" 
               className="search-form__action-btn info-fetch-btn"
               disabled={loading}

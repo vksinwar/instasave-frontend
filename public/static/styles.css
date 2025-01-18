@@ -1503,7 +1503,7 @@ section {
     }
 
     .search-form__actions {
-        flex-direction: column;
+        flex-direction: row;
         gap: 10px;
     }
 }
@@ -1566,3 +1566,26 @@ section {
         scroll-behavior: auto !important;
     }
 }
+
+.search-form__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.paste-btn {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.paste-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.paste-btn:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
