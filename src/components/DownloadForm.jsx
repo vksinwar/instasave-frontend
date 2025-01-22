@@ -55,13 +55,18 @@ function DownloadForm() {
       const cachedData = localStorage.getItem(cacheKey);
       
       if (cachedData) {
-        const parsed = JSON.parse(cachedData);
-        if (parsed.timestamp > Date.now() - 3600000) { // Cache valid for 1 hour
-          setVideoInfo(parsed.data);
-          setLoading(false);
-          return;
+        try {
+          const parsed = JSON.parse(cachedData);
+          if (parsed.timestamp > Date.now() - 3600000) { // Cache valid for 1 hour
+            setVideoInfo(parsed.data);
+            setLoading(false);
+            return;
+          }
+          localStorage.removeItem(cacheKey); // Clear expired cache
+        } catch (e) {
+          console.error('Cache parsing error:', e);
+          localStorage.removeItem(cacheKey);
         }
-        localStorage.removeItem(cacheKey); // Clear expired cache
       }
 
       // Extract basic info client-side when possible
@@ -71,22 +76,54 @@ function DownloadForm() {
       }
 
       // Fetch full details from backend
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/video?url=${encodeURIComponent(url)}`);
+      const apiUrl = `${API_URL}/video?url=${encodeURIComponent(url)}&platform=${platform}`;
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Invalid response from server. Please try again later.');
+      }
+
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.error);
+        throw new Error(data.error || 'Failed to process video');
       }
 
       // Cache the successful response
-      localStorage.setItem(cacheKey, JSON.stringify({
-        timestamp: Date.now(),
-        data: data
-      }));
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify({
+          timestamp: Date.now(),
+          data: data
+        }));
+      } catch (e) {
+        console.error('Cache storage error:', e);
+      }
 
       setVideoInfo(data);
+
+      // Handle download if URL is available
+      if (data.download_url) {
+        const link = document.createElement('a');
+        link.href = data.download_url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.download = `${data.title || 'video'}.mp4`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
     } catch (err) {
-      setError(err.message);
+      console.error('Download error:', err);
+      setError(err.message || 'Failed to download video. Please try again.');
     } finally {
       setLoading(false);
     }
