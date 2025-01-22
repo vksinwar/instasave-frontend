@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { detectPlatform, validateVideoUrl, extractBasicInfo } from '../utils/videoUtils';
 
 const API_URL = 'https://isave-backend-sjwi.onrender.com/api';
 
@@ -8,6 +9,25 @@ function DownloadForm() {
   const [error, setError] = useState(null);
   const [videoInfo, setVideoInfo] = useState(null);
   const [progress, setProgress] = useState(0);
+
+  // Client-side URL validation and platform detection
+  const validateInput = useCallback((inputUrl) => {
+    try {
+      const platform = detectPlatform(inputUrl);
+      if (!platform) {
+        throw new Error('Unsupported platform. Please provide a valid YouTube or Instagram URL');
+      }
+      
+      if (!validateVideoUrl(inputUrl, platform)) {
+        throw new Error(`Invalid ${platform} URL`);
+      }
+
+      return platform;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    }
+  }, []);
 
   const handlePaste = async () => {
     try {
@@ -20,77 +40,53 @@ function DownloadForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!url) {
-      setError('Please enter a valid URL');
-      return;
-    }
-
-    setLoading(true);
     setError(null);
-    setProgress(0);
     setVideoInfo(null);
 
+    // Client-side validation
+    const platform = validateInput(url);
+    if (!platform) return;
+
+    setLoading(true);
+
     try {
-      // Using fetch as specified by the backend
-      const response = await fetch(`${API_URL}/video?url=${encodeURIComponent(url)}`, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'omit',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+      // Try to get from cache first
+      const cacheKey = `video_${url}`;
+      const cachedData = localStorage.getItem(cacheKey);
+      
+      if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        if (parsed.timestamp > Date.now() - 3600000) { // Cache valid for 1 hour
+          setVideoInfo(parsed.data);
+          setLoading(false);
+          return;
         }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        localStorage.removeItem(cacheKey); // Clear expired cache
       }
 
+      // Extract basic info client-side when possible
+      const basicInfo = await extractBasicInfo(url, platform);
+      if (basicInfo) {
+        setVideoInfo(basicInfo); // Show basic info immediately
+      }
+
+      // Fetch full details from backend
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/video?url=${encodeURIComponent(url)}`);
       const data = await response.json();
-      console.log('API Response:', data); // For debugging
 
-      if (!data) {
-        throw new Error('No data received from server');
+      if (!data.success) {
+        throw new Error(data.error);
       }
 
-      // Download the video directly
-      const downloadUrl = data.download_url;
-      if (!downloadUrl) {
-        throw new Error('No download URL available');
-      }
+      // Cache the successful response
+      localStorage.setItem(cacheKey, JSON.stringify({
+        timestamp: Date.now(),
+        data: data
+      }));
 
-      // Create an anchor element and trigger download
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.download = 'video.mp4';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Set video info if available
-      setVideoInfo({
-        title: data.title || 'Video',
-        thumbnail: data.thumbnail,
-        duration: data.duration,
-        format: data.format || 'mp4'
-      });
-
-      setProgress(100);
+      setVideoInfo(data);
     } catch (err) {
-      console.error('Download error:', err);
-      let errorMessage = 'Failed to download video. Please try again.';
-      
-      if (err.response) {
-        errorMessage = err.response.data?.message || err.response.statusText;
-      } else if (err instanceof TypeError && err.message === 'Failed to fetch') {
-        errorMessage = 'Network error. Please check your connection.';
-      } else {
-        errorMessage = err.message;
-      }
-      
-      setError(errorMessage);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
