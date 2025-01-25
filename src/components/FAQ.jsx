@@ -153,9 +153,9 @@ function FAQ() {
       
       <div className="faq-list">
         {faqItems.map((item) => (
-          <div key={item.id} className="faq-item">
+          <div key={item.id} className={`faq-item ${openQuestion === item.id ? 'active' : ''}`}>
             <button 
-              className={`faq-question ${openQuestion === item.id ? 'active' : ''}`}
+              className="faq-question"
               onClick={() => toggleQuestion(item.id)}
               aria-expanded={openQuestion === item.id}
               aria-controls={`faq-answer-${item.id}`}
@@ -172,7 +172,7 @@ function FAQ() {
             </button>
             <div 
               id={`faq-answer-${item.id}`}
-              className={`faq-answer ${openQuestion === item.id ? 'active' : ''}`}
+              className="faq-answer"
               aria-hidden={openQuestion !== item.id}
             >
               {item.answer}
