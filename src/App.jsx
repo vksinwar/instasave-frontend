@@ -26,7 +26,7 @@ function App() {
     setResult(null)
 
     try {
-      const response = await fetch('https://8xhpiqclw6gg.manus.space/api/video/extract', {
+      const response = await fetch('https://19hninc1yjpk.manus.space/api/video/extract', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,42 +52,74 @@ function App() {
     setDownloadLoading(prev => ({ ...prev, [formatId]: true }))
     
     try {
-      const response = await fetch('https://8xhpiqclw6gg.manus.space/api/video/download', {
+      // Find the format with the matching ID
+      const format = result.formats.find(f => f.format_id === formatId)
+      if (!format) {
+        setError('Format not found')
+        return
+      }
+      
+      // Use the backend to proxy the download to avoid CORS issues
+      const response = await fetch('https://19hninc1yjpk.manus.space/api/video/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          url: url.trim(), 
+          url: format.url, 
           format_id: formatId 
         })
       })
 
-      if (response.headers.get('content-type')?.includes('application/json')) {
-        // JSON response - might be an error or redirect
-        const data = await response.json()
-        if (data.success && data.download_url) {
-          // Create a temporary link to trigger download
+      if (response.ok) {
+        // Check if it's a video file
+        const contentType = response.headers.get('content-type')
+        if (contentType && contentType.startsWith('video/')) {
+          // It's a video file - download it
+          const blob = await response.blob()
+          const downloadUrl = window.URL.createObjectURL(blob)
           const link = document.createElement('a')
-          link.href = data.download_url
-          link.download = data.filename || `video_${formatId}.mp4`
+          link.href = downloadUrl
+          link.download = `instasave_video_${formatId}.mp4`
           document.body.appendChild(link)
           link.click()
           document.body.removeChild(link)
+          window.URL.revokeObjectURL(downloadUrl)
         } else {
+          // It might be a JSON response with error
+          const data = await response.json()
           setError(data.error || 'Download failed')
         }
       } else {
-        // Binary response - direct file download
-        const blob = await response.blob()
-        const downloadUrl = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = downloadUrl
-        link.download = `video_${formatId}.mp4`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(downloadUrl)
+        // Try fallback method - direct download with fetch
+        try {
+          const directResponse = await fetch(format.url, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+              'Accept': 'video/*,*/*;q=0.9',
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+          })
+          
+          if (directResponse.ok) {
+            const blob = await directResponse.blob()
+            const downloadUrl = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = downloadUrl
+            link.download = `instasave_video_${formatId}.mp4`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(downloadUrl)
+          } else {
+            // Final fallback - open in new tab
+            window.open(format.url, '_blank')
+          }
+        } catch (fallbackError) {
+          // Ultimate fallback - open in new tab
+          window.open(format.url, '_blank')
+        }
       }
     } catch (err) {
       setError('Download failed. Please try again.')
