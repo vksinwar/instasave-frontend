@@ -1,187 +1,141 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
-function FAQ() {
-  const [openQuestion, setOpenQuestion] = useState(null);
+const FAQ = () => {
+  const [openItems, setOpenItems] = useState(new Set())
 
-  const faqItems = [
-    {
-      id: 1,
-      question: "What is an Instagram Video Downloader?",
-      answer: "InstaSave is a web-based tool that allows you to download videos, reels, and stories from Instagram. It's designed to be user-friendly and doesn't require any software installation."
-    },
-    {
-      id: 2,
-      question: "Which file formats are supported for downloading?",
-      answer: (
-        <>
-          <p>We support downloading in multiple formats including:</p>
-          <ul>
-            <li>MP4 for videos</li>
-            <li>JPG/PNG for images</li>
-            <li>MP3 for audio extraction</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      id: 3,
-      question: "Which devices are compatible with InstaSave?",
-      answer: (
-        <>
-          <p>InstaSave works on all devices with a web browser, including:</p>
-          <ul>
-            <li>Desktop computers (Windows, Mac, Linux)</li>
-            <li>Mobile phones (iOS, Android)</li>
-            <li>Tablets and iPads</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      id: 4,
-      question: "Is there a limit on the number of downloads?",
-      answer: "No, there's no limit on the number of videos you can download. Our service is completely free and unlimited."
-    },
-    {
-      id: 5,
-      question: "What is the maximum quality of downloads?",
-      answer: (
-        <>
-          <p>We provide the highest quality available from the source:</p>
-          <ul>
-            <li>Videos: Up to 4K quality (if available)</li>
-            <li>Images: Original resolution</li>
-            <li>Stories: Best available quality</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      id: 6,
-      question: "How to download Instagram Reels without watermark?",
-      answer: (
-        <>
-          <p>To download Instagram Reels without watermark using InstaSave:</p>
-          <ol>
-            <li>Copy the Reels URL from Instagram</li>
-            <li>Paste it into InstaSave's download box</li>
-            <li>Click download to get your watermark-free Reels video</li>
-          </ol>
-          <p>Our tool ensures high-quality downloads while removing the Instagram watermark automatically.</p>
-        </>
-      )
-    },
-    {
-      id: 7,
-      question: "Can I download Facebook videos using InstaSave?",
-      answer: (
-        <>
-          <p>Yes! InstaSave supports Facebook video downloads from:</p>
-          <ul>
-            <li>Facebook public posts</li>
-            <li>Facebook Watch videos</li>
-            <li>Facebook Reels</li>
-            <li>Facebook Stories (while they're active)</li>
-          </ul>
-          <p>Simply copy the Facebook video URL and paste it into our downloader to save in HD quality.</p>
-        </>
-      )
-    },
-    {
-      id: 8,
-      question: "How to save YouTube videos in different qualities?",
-      answer: (
-        <>
-          <p>InstaSave offers multiple quality options for YouTube downloads:</p>
-          <ul>
-            <li>4K (2160p) Ultra HD quality</li>
-            <li>1080p Full HD</li>
-            <li>720p HD</li>
-            <li>480p and 360p for smaller file sizes</li>
-            <li>Audio-only MP3 format</li>
-          </ul>
-          <p>After pasting the YouTube URL, you'll see all available quality options for your video.</p>
-        </>
-      )
-    },
-    {
-      id: 9,
-      question: "Is it safe to download using InstaSave?",
-      answer: (
-        <>
-          <p>Yes, InstaSave is completely safe to use:</p>
-          <ul>
-            <li>No software installation required</li>
-            <li>No registration needed</li>
-            <li>Secure HTTPS connection</li>
-            <li>No personal data collection</li>
-            <li>Ad-free experience</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      id: 10,
-      question: "How to download Instagram Stories anonymously?",
-      answer: (
-        <>
-          <p>InstaSave allows you to download Instagram Stories without the creator knowing:</p>
-          <ol>
-            <li>Copy the profile URL or username</li>
-            <li>Paste it into InstaSave</li>
-            <li>Select the story you want to download</li>
-            <li>Download anonymously in original quality</li>
-          </ol>
-          <p>The story owner won't know you've downloaded their content.</p>
-        </>
-      )
+  const toggleItem = (index) => {
+    const newOpenItems = new Set(openItems)
+    if (newOpenItems.has(index)) {
+      newOpenItems.delete(index)
+    } else {
+      newOpenItems.add(index)
     }
-  ];
+    setOpenItems(newOpenItems)
+  }
 
-  const toggleQuestion = (id) => {
-    setOpenQuestion(openQuestion === id ? null : id);
-  };
+  const faqData = [
+    {
+      question: "How do I download Instagram videos using InstaSave?",
+      answer: "To download Instagram videos: 1) Copy the Instagram video URL from the app or website, 2) Paste the URL into InstaSave's input field, 3) Click the 'Download' button, 4) Choose your preferred video quality and download the file. The process is completely free and requires no registration."
+    },
+    {
+      question: "Is InstaSave free to use?",
+      answer: "Yes, InstaSave is completely free to use. You can download unlimited videos from Instagram, TikTok, YouTube Shorts, and other platforms without any charges or subscription fees. There are no hidden costs or premium features."
+    },
+    {
+      question: "What video formats and qualities are supported?",
+      answer: "InstaSave supports multiple video formats including MP4, and various quality options from 360p to 1080p HD. The available quality options depend on the original video's resolution. We automatically detect the best available quality for each video."
+    },
+    {
+      question: "Do I need to create an account to download videos?",
+      answer: "No account creation is required. InstaSave works without registration, login, or any personal information. Simply paste the video URL and download immediately. This ensures your privacy and makes the process quick and hassle-free."
+    },
+    {
+      question: "Which platforms are supported by InstaSave?",
+      answer: "InstaSave supports major social media platforms including Instagram (videos, reels, stories, IGTV), TikTok, YouTube Shorts, Facebook videos, and Twitter videos. We continuously add support for new platforms based on user demand."
+    },
+    {
+      question: "Is it legal to download videos from social media platforms?",
+      answer: "Downloading videos for personal use is generally acceptable, but you should respect copyright laws and platform terms of service. Only download content you have permission to use, and avoid redistributing copyrighted material without proper authorization."
+    },
+    {
+      question: "Why can't I download some videos?",
+      answer: "Some videos may be unavailable for download due to privacy settings (private accounts), geographic restrictions, or platform-specific limitations. Additionally, live streams and some protected content cannot be downloaded."
+    },
+    {
+      question: "Does InstaSave work on mobile devices?",
+      answer: "Yes, InstaSave is fully optimized for mobile devices including smartphones and tablets. The website works seamlessly on iOS, Android, and all major mobile browsers without requiring any app installation."
+    },
+    {
+      question: "How fast are the downloads?",
+      answer: "Download speeds depend on your internet connection and the video file size. InstaSave uses optimized servers to ensure fast processing and download speeds. Most videos are processed and ready for download within seconds."
+    },
+    {
+      question: "Are there any download limits?",
+      answer: "InstaSave has no daily or monthly download limits. You can download as many videos as you need, whenever you need them. We believe in providing unlimited access to our free service."
+    },
+    {
+      question: "Is my data safe when using InstaSave?",
+      answer: "Yes, your privacy and data security are our top priorities. We don't store your downloaded videos, track your activity, or collect personal information. All processing happens securely, and we don't keep logs of your downloads."
+    },
+    {
+      question: "What should I do if a download fails?",
+      answer: "If a download fails, try these steps: 1) Check if the video URL is correct and accessible, 2) Ensure the video is public (not from a private account), 3) Try refreshing the page and attempting again, 4) Check your internet connection. If problems persist, the video may have platform-specific restrictions."
+    }
+  ]
+
+  // Generate FAQ schema markup
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqData.map(item => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }))
+  }
 
   return (
-    <div className="container">
-      <h2 className="faq-title">Frequently Asked Questions (FAQ)</h2>
-      <p className="faq-subtitle">
-        Get answers about downloading from Instagram, Facebook, and YouTube using InstaSave. 
-        Learn how to save Reels, Stories, Facebook videos, and YouTube content in HD quality. 
-        Can't find what you're looking for? Contact us for help!
-      </p>
+    <section className="py-16 px-4 max-w-4xl mx-auto">
+      {/* Schema markup for FAQ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       
-      <div className="faq-list">
-        {faqItems.map((item) => (
-          <div key={item.id} className={`faq-item ${openQuestion === item.id ? 'active' : ''}`}>
-            <button 
-              className="faq-question"
-              onClick={() => toggleQuestion(item.id)}
-              aria-expanded={openQuestion === item.id}
-              aria-controls={`faq-answer-${item.id}`}
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          Frequently Asked Questions
+        </h2>
+        <p className="text-lg text-white/80 max-w-2xl mx-auto">
+          Find answers to common questions about downloading videos from Instagram, TikTok, YouTube Shorts, and other social media platforms.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {faqData.map((item, index) => (
+          <div
+            key={index}
+            className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 overflow-hidden"
+          >
+            <button
+              onClick={() => toggleItem(index)}
+              className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
             >
-              <span>{item.question}</span>
-              <img 
-                src="/static/icons/arrow.svg" 
-                alt="" 
-                className={`faq-icon ${openQuestion === item.id ? 'active' : ''}`}
-                width="24" 
-                height="24" 
-                aria-hidden="true"
-              />
+              <h3 className="text-lg font-semibold text-white pr-4">
+                {item.question}
+              </h3>
+              {openItems.has(index) ? (
+                <ChevronUp className="w-5 h-5 text-white/70 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-white/70 flex-shrink-0" />
+              )}
             </button>
-            <div 
-              id={`faq-answer-${item.id}`}
-              className="faq-answer"
-              aria-hidden={openQuestion !== item.id}
-            >
-              {item.answer}
-            </div>
+            
+            {openItems.has(index) && (
+              <div className="px-6 pb-4">
+                <p className="text-white/80 leading-relaxed">
+                  {item.answer}
+                </p>
+              </div>
+            )}
           </div>
         ))}
       </div>
-    </div>
-  );
+
+      <div className="mt-12 text-center">
+        <p className="text-white/70">
+          Still have questions? Our video downloader is designed to be simple and intuitive. 
+          Just paste any video URL and start downloading instantly!
+        </p>
+      </div>
+    </section>
+  )
 }
 
-export default FAQ; 
+export default FAQ
+
