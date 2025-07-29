@@ -26,7 +26,7 @@ function App() {
     setResult(null)
 
     try {
-      const response = await fetch('https://8xhpiqclw3mx.manus.space/api/video/extract', {
+      const response = await fetch('https://8xhpiqclw6gg.manus.space/api/video/extract', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ function App() {
     setDownloadLoading(prev => ({ ...prev, [formatId]: true }))
     
     try {
-      const response = await fetch('https://8xhpiqclw3mx.manus.space/api/video/download', {
+      const response = await fetch('https://8xhpiqclw6gg.manus.space/api/video/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
