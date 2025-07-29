@@ -15,7 +15,7 @@ export default defineConfig({
     allowedHosts: 'all',
     proxy: {
       '/api': {
-        target: 'https://19hninc1yjpk.manus.space',
+        target: 'https://ogh5izce50y8.manus.space',
         changeOrigin: true,
       }
     }

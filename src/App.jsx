@@ -26,7 +26,7 @@ function App() {
     setResult(null)
 
     try {
-      const response = await fetch('https://19hninc1yjpk.manus.space/api/video/extract', {
+      const response = await fetch('https://ogh5izce50y8.manus.space/api/video/extract', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ function App() {
       }
       
       // Use the backend to proxy the download to avoid CORS issues
-      const response = await fetch('https://19hninc1yjpk.manus.space/api/video/download', {
+      const response = await fetch('https://ogh5izce50y8.manus.space/api/video/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
