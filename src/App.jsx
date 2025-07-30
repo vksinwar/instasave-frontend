@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Card, CardContent } from '@/components/ui/card.jsx'
-import { Download, Instagram, Youtube, Facebook, Zap, Shield, Smartphone, Globe, Music, Play, Clock, User, Eye } from 'lucide-react'
+import { Download, Instagram, Youtube, Facebook, Zap, Shield, Smartphone, Globe, Music, Play, Clock, User, Eye, ExternalLink, ArrowUp } from 'lucide-react'
 import FAQ from './components/FAQ'
 import HowToGuide from './components/HowToGuide'
 import { HeaderAd, InContentAd, FooterAd, MobileAd } from './components/AdSenseAd'
@@ -14,6 +14,16 @@ function App() {
   const [error, setError] = useState('')
   const [result, setResult] = useState(null)
   const [downloadLoading, setDownloadLoading] = useState({})
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  // Handle scroll to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleDownload = async () => {
     if (!url.trim()) {
@@ -26,7 +36,7 @@ function App() {
     setResult(null)
 
     try {
-      const response = await fetch('https://ogh5izce50y8.manus.space/api/video/extract', {
+      const response = await fetch('https://p9hwiqcl1dm6.manus.space/api/video/extract', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +70,7 @@ function App() {
       }
       
       // Use the backend to proxy the download to avoid CORS issues
-      const response = await fetch('https://ogh5izce50y8.manus.space/api/video/download', {
+      const response = await fetch('https://p9hwiqcl1dm6.manus.space/api/video/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,6 +147,17 @@ function App() {
     }
   }
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const scrollToDownloadTool = () => {
+    const downloadSection = document.getElementById('download-tool')
+    if (downloadSection) {
+      downloadSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   const formatDuration = (seconds) => {
     if (!seconds) return 'Unknown'
     const mins = Math.floor(seconds / 60)
@@ -157,11 +178,19 @@ function App() {
       <header className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-              <Download className="w-6 h-6 text-green-500" />
-            </div>
-            <h1 className="text-2xl font-bold text-white">InstaSave</h1>
+            <a href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                <Download className="w-6 h-6 text-green-500" />
+              </div>
+              <h1 className="text-2xl font-bold text-white">InstaSave</h1>
+            </a>
           </div>
+          <nav className="hidden md:flex items-center space-x-6">
+            <a href="#how-it-works" className="text-white/80 hover:text-white transition-colors">How It Works</a>
+            <a href="#features" className="text-white/80 hover:text-white transition-colors">Features</a>
+            <a href="#guides" className="text-white/80 hover:text-white transition-colors">Guides</a>
+            <a href="#faq" className="text-white/80 hover:text-white transition-colors">FAQ</a>
+          </nav>
           <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
             English
           </Button>
@@ -189,7 +218,7 @@ function App() {
         </div>
 
         {/* Download Form */}
-        <div className="max-w-2xl mx-auto mb-12">
+        <div id="download-tool" className="max-w-2xl mx-auto mb-12">
           <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
             <CardContent className="p-6">
               <div className="space-y-4">
@@ -200,11 +229,13 @@ function App() {
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     className="flex-1 h-12 text-lg"
+                    aria-label="Video URL input"
                   />
                   <Button
                     variant="outline"
                     onClick={handlePaste}
                     className="h-12 px-4"
+                    aria-label="Paste from clipboard"
                   >
                     Paste
                   </Button>
@@ -213,6 +244,7 @@ function App() {
                   onClick={handleDownload}
                   disabled={!url.trim() || loading}
                   className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+                  aria-label="Download video"
                 >
                   {loading ? (
                     <div className="flex items-center space-x-2">
@@ -230,7 +262,7 @@ function App() {
 
               {/* Error Display */}
               {error && (
-                <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
+                <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg" role="alert">
                   <p className="text-red-700 text-sm">{error}</p>
                 </div>
               )}
@@ -246,7 +278,7 @@ function App() {
                       {result.thumbnail && (
                         <img 
                           src={result.thumbnail} 
-                          alt="Video thumbnail"
+                          alt={`Thumbnail for ${result.title || 'video'}`}
                           className="w-24 h-24 object-cover rounded-lg"
                         />
                       )}
@@ -295,6 +327,7 @@ function App() {
                             onClick={() => handleVideoDownload(format.format_id)}
                             disabled={downloadLoading[format.format_id]}
                             className="bg-green-500 hover:bg-green-600 text-white"
+                            aria-label={`Download ${format.quality} quality`}
                           >
                             {downloadLoading[format.format_id] ? (
                               <div className="flex items-center space-x-2">
@@ -324,27 +357,51 @@ function App() {
             </CardContent>
           </Card>
 
-          {/* Platform Icons */}
+          {/* Platform Icons with Links */}
           <div className="flex justify-center space-x-6 mt-8">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+            <a 
+              href="https://www.instagram.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+              aria-label="Visit Instagram"
+            >
               <Instagram className="w-6 h-6 text-pink-500" />
-            </div>
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+            </a>
+            <a 
+              href="https://www.tiktok.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+              aria-label="Visit TikTok"
+            >
               <div className="w-6 h-6 bg-black rounded-sm flex items-center justify-center">
                 <span className="text-white text-xs font-bold">T</span>
               </div>
-            </div>
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+            </a>
+            <a 
+              href="https://www.youtube.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+              aria-label="Visit YouTube"
+            >
               <Youtube className="w-6 h-6 text-red-500" />
-            </div>
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+            </a>
+            <a 
+              href="https://www.facebook.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+              aria-label="Visit Facebook"
+            >
               <Facebook className="w-6 h-6 text-blue-600" />
-            </div>
+            </a>
           </div>
         </div>
 
         {/* How It Works */}
-        <section className="mb-16">
+        <section id="how-it-works" className="mb-16">
           <h3 className="text-3xl font-bold text-white text-center mb-12">
             How to download video from Instagram?
           </h3>
@@ -389,7 +446,7 @@ function App() {
         </section>
 
         {/* Features */}
-        <section className="mb-16">
+        <section id="features" className="mb-16">
           <h3 className="text-3xl font-bold text-white text-center mb-12">
             Why Choose InstaSave?
           </h3>
@@ -444,10 +501,14 @@ function App() {
         </div>
 
         {/* How-to Guide */}
-        <HowToGuide />
+        <section id="guides">
+          <HowToGuide />
+        </section>
 
         {/* FAQ Section */}
-        <FAQ />
+        <section id="faq">
+          <FAQ />
+        </section>
       </main>
 
       {/* Footer Ad */}
@@ -462,37 +523,83 @@ function App() {
             <div>
               <h5 className="text-white font-semibold mb-3">Tools</h5>
               <ul className="space-y-2 text-white/70 text-sm">
-                <li><a href="#" className="hover:text-white">Video Downloader</a></li>
-                <li><a href="#" className="hover:text-white">Reels Downloader</a></li>
-                <li><a href="#" className="hover:text-white">Story Downloader</a></li>
-                <li><a href="#" className="hover:text-white">Short Downloader</a></li>
+                <li><a href="#download-tool" onClick={scrollToDownloadTool} className="hover:text-white transition-colors">Video Downloader</a></li>
+                <li><a href="#download-tool" onClick={scrollToDownloadTool} className="hover:text-white transition-colors">Reels Downloader</a></li>
+                <li><a href="#download-tool" onClick={scrollToDownloadTool} className="hover:text-white transition-colors">Story Downloader</a></li>
+                <li><a href="#download-tool" onClick={scrollToDownloadTool} className="hover:text-white transition-colors">Short Downloader</a></li>
               </ul>
             </div>
             <div>
               <h5 className="text-white font-semibold mb-3">Guides</h5>
               <ul className="space-y-2 text-white/70 text-sm">
-                <li><a href="#" className="hover:text-white">How to Download Instagram Reels</a></li>
-                <li><a href="#" className="hover:text-white">How to Download Instagram Videos</a></li>
-                <li><a href="#" className="hover:text-white">TikTok Video Download Guide</a></li>
+                <li><a href="#guides" className="hover:text-white transition-colors">How to Download Instagram Reels</a></li>
+                <li><a href="#guides" className="hover:text-white transition-colors">How to Download Instagram Videos</a></li>
+                <li><a href="#guides" className="hover:text-white transition-colors">TikTok Video Download Guide</a></li>
+                <li><a href="#guides" className="hover:text-white transition-colors">YouTube Shorts Download Guide</a></li>
               </ul>
             </div>
             <div>
               <h5 className="text-white font-semibold mb-3">Support</h5>
               <ul className="space-y-2 text-white/70 text-sm">
-                <li><a href="#" className="hover:text-white">FAQ</a></li>
-                <li><a href="#" className="hover:text-white">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white">Help Center</a></li>
+                <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
+                <li><a href="mailto:support@instasave.com" className="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#faq" className="hover:text-white transition-colors">Help Center</a></li>
+                <li><a href="#guides" className="hover:text-white transition-colors">User Guide</a></li>
               </ul>
             </div>
             <div>
               <h5 className="text-white font-semibold mb-3">Legal</h5>
               <ul className="space-y-2 text-white/70 text-sm">
-                <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white">Terms & Conditions</a></li>
-                <li><a href="#" className="hover:text-white">DMCA</a></li>
+                <li><a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms-of-service" className="hover:text-white transition-colors">Terms & Conditions</a></li>
+                <li><a href="/dmca" className="hover:text-white transition-colors">DMCA</a></li>
+                <li><a href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</a></li>
               </ul>
             </div>
           </div>
+          
+          {/* Social Media Links */}
+          <div className="flex justify-center space-x-6 mb-6">
+            <a 
+              href="https://www.instagram.com/instasave" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Follow us on Instagram"
+            >
+              <Instagram className="w-6 h-6" />
+            </a>
+            <a 
+              href="https://www.tiktok.com/@instasave" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Follow us on TikTok"
+            >
+              <div className="w-6 h-6 bg-white/60 rounded-sm flex items-center justify-center hover:bg-white transition-colors">
+                <span className="text-black text-xs font-bold">T</span>
+              </div>
+            </a>
+            <a 
+              href="https://www.youtube.com/@instasave" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Subscribe to our YouTube channel"
+            >
+              <Youtube className="w-6 h-6" />
+            </a>
+            <a 
+              href="https://www.facebook.com/instasave" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Like us on Facebook"
+            >
+              <Facebook className="w-6 h-6" />
+            </a>
+          </div>
+          
           <div className="text-center pt-6 border-t border-white/10">
             <div className="flex items-center justify-center space-x-3 mb-4">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
@@ -500,12 +607,26 @@ function App() {
               </div>
               <span className="text-white font-bold text-lg">InstaSave</span>
             </div>
-            <p className="text-white/60 text-sm">
+            <p className="text-white/60 text-sm mb-2">
               © 2024 InstaSave. All rights reserved. Download responsibly and respect content creators' rights.
+            </p>
+            <p className="text-white/50 text-xs">
+              InstaSave is not affiliated with Instagram, TikTok, YouTube, or Facebook. All trademarks belong to their respective owners.
             </p>
           </div>
         </div>
       </footer>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 w-12 h-12 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+      )}
     </div>
   )
 }
